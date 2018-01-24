@@ -104,7 +104,7 @@ mydate(); //  get current date
         if(temp!=null && temp.length>0)
         {
             console.log('temp: ',temp);
-            Total = temp[month].total + priceval;
+            Total = parseFloat(temp[months.indexOf(month)].total) + parseFloat(priceval);
         }
         else{
             Total = priceval;
@@ -119,11 +119,12 @@ mydate(); //  get current date
          myarray[0] = add;
          myarray.push(myobj);
          available[months.indexOf(month)] = {
-             'month': add
+             month: month,
+             'total': Total
          };
          console.log(available);
         localStorage.setItem(month, JSON.stringify(myarray));
-        // localStorage.setItem('available', JSON.stringify(available));
+        localStorage.setItem('available', JSON.stringify(available));
     },
     'get': function (month) { 
         return (JSON.parse(localStorage.getItem(month)));
