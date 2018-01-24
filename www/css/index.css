@@ -1,0 +1,63 @@
+:root {
+    --bodybgcolor: #F94A4A;
+    --button-color: #5E5B94;
+    --bgmodal:#81C99C;
+}
+body {
+    -webkit-touch-callout: none;                /* prevent callout to copy image, etc when tap to hold */
+    -webkit-text-size-adjust: none;             /* prevent webkit from resizing text to fit */
+    -webkit-user-select: none;                  /* prevent copy paste, to allow, change 'none' to 'text' */
+background: var(--bodybgcolor);
+}
+
+.container {
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+}
+#index {}
+
+#wrapper {
+    background: var(--wrapper);
+    margin: auto 0px;
+    border-radius: 0px;
+    padding: 0px;
+}
+li.collection-item.avatar {
+    border-radius: 40px;
+    margin-bottom: 10px;
+    /* background: #bdbdbd; */
+}
+ul.collection {
+    border: none;
+    /* border-radius: 40px; */
+}
+
+.addButton {
+    text-align: center;
+}
+a#add {
+    background-color: var(--button-color);
+}
+
+.navbar-fixed nav {
+    background-color: var(--bodybgcolor);
+        text-align: center;
+            box-shadow: none;
+            -webkit-box-shadow: none;
+}
+
+div.modal.full-screen {
+    width: 90%;
+    height: 100%;
+}
+div#modal1 {
+    background-color: var(--bgmodal);
+}
+    div#modal1.modal .modal-close {
+   padding: 0px 0px 0px 0px;
+       right: -2%;
+}
+div#modal1.modal .modal-close i {
+    font-size: 2em;
+}
