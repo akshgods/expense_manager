@@ -19,6 +19,8 @@ var add, expens, index, back, card, submit, exp, price, myarray = [],
     d, date, month, year, day, available = [], home, card;
 var months=['JAN','FEB','MAR','APR','MAY','JUN','JULY','AUG','SEP','OCT','NOV','DEC'];
 var days=['SUNDAY','MONDAY','TUESDAY','WENSDAY','THURSDAY','FRIDAY','SATURDAY'];
+var longpress = 500;
+var start;
 
 $().ready(function () {
  $('.modal').modal(
@@ -40,27 +42,21 @@ $().ready(function () {
  );
     add=$('#add');
     expens = $('#expens');
-    index = $('#index');
     back=$('#back');
     exp=$('#exp');
 submit=$('#submit');
 price = $('#price');
-goback=$('#goback');
 home=$('#home');
-card = $(".card");
 mydate(); //  get current date
-
+displayExpense();
 
       //back button
-      back.on('click',function () { 
+      $('#back').on('click', function () {
             // alert();
             // console.log(getAll);
+            displayExpense();
        });
-goback.on('click',function () {
-    home.show();
-    index.hide();
-    $('.back').hide();
-  });
+
        //submit click
        submit.on('click',function () {
             var expval = exp.val();
@@ -73,29 +69,35 @@ goback.on('click',function () {
                 // alert('Please fill both');
             }
 
-         });
+         });     
+  });
 
-           var longpress = 500;
-           var start;
+   $(document).on('touchstart mousedown', ".card", function (e) {
+       //    e.preventDefault();
+       start = new Date().getTime();
+   });
+   $(document).on('touchend mouseup',".card", function (e) {
+       var tempDate = new Date().getTime();
+       if (tempDate >= (start + longpress)) {
+           //    alert('long press!');
+           $(this).parent('.wrappcard').addClass('delete');
+       } else {
+           //    alert('short press!');
+            // $(this).parent
+           displayCollection('JAN');
+            
+           $(this).parent('.wrappcard').removeClass('delete');
+           $('#index').show();
+           $('#home').hide();
+           $('.back').show();
+       }
+   });
 
-           card.on('touchstart mousedown', function (e) {
-            //    e.preventDefault();
-               start = new Date().getTime();
-           });
-           card.on('touchend mouseup', function (e) {
-               var tempDate = new Date().getTime();
-               if (tempDate >= (start + longpress)) {
-                //    alert('long press!');
-                   $(this).parent('.wrappcard').addClass('delete');
-               } else {
-                //    alert('short press!');
-                   $(this).parent('.wrappcard').removeClass('delete');
-                     index.show();
-                     home.hide();
-                      $('.back').show();
-               }
-           });
-           
+  $('#goback').on('click', function () {
+      $('#home').show();
+      $('#index').hide();
+      $('.back').hide();
+      displayExpense();
   });
 
  $(document).on('click', '.wrappcard .del', function () {
@@ -106,14 +108,6 @@ goback.on('click',function () {
      database.delete(del);
  });
 
-
-//   $(document).on('click', '.card', function () {
-      
-
-//      index.show();
-//      home.hide();
-//       $('.back').show();
-//   });
 
   function mydate() {
       //current date
@@ -127,6 +121,7 @@ goback.on('click',function () {
 
   var database={
     'set': function (expval, priceval) {
+        myarray=[];
          var old = database.get(month);
          var temp = database.get('available');
          var Total;
@@ -134,7 +129,7 @@ goback.on('click',function () {
               'exp': expval,
               'priceval': priceval
           };
-        if(temp!=null && temp.length>0)
+        if (temp != null && temp.length > 0 && temp[months.indexOf(month)] !== null)
         {
             console.log('temp: ',temp);
             Total = parseFloat(temp[months.indexOf(month)].total) + parseFloat(priceval);
@@ -180,4 +175,38 @@ goback.on('click',function () {
 }
   }
   
- 
+ var displayExpense=function () { 
+     var available= database.getAll();
+      var showExpense=$('#home .showExpense');
+      showExpense.html('');
+     var li='';
+     $.each(available,function (key,val) {
+        if(val)
+        {
+         console.log(val);
+            
+          li = '<div class="wrappcard"><a class="waves-effect waves-light btn del" id="'+val.month+'">Delete</a><div class="card teal"><div class="card-content white-text"><span class="card-title">'+val.month+'</span><p>I am a very simple card.I am good at containing small bits of information.I am convenient because I require little markup to use effectively.</p></div><div class="card-action"><a href="#">Total:</a><a href="#">'+val.total+'</a></div></div></div > ';
+        console.log('li ',li);
+               showExpense.append(li);
+                   }
+       });
+
+
+  }
+
+  var displayCollection=function (month) {
+      $('#index .wrapp .collection').html('');
+      var data = database.get(month);
+       var li='';
+$.each(data,function (key,val) {
+    if (val.exp!=undefined)
+    {
+  li = '<li class="collection-item avatar"><i class="material-icons circle red">attach_money</i><img src="images/yuna.jpg" alt="" class="circle"><span class="title">' + date + "/" + day + '</span><p> ' + val.exp + '<br>' + val.priceval + '</p><a href="#!" class="secondary-content"><i class="material-icons">grade</i></a></li>';
+    $('#index .wrapp .collection').append(li);
+    }
+  });
+
+  var payment = data[0].total;
+  li = '<li class="collection-item avatar"><i class="material-icons circle red">attach_money</i><img src="images/yuna.jpg" alt="" class="circle"><span class="title">Total: ' + payment + '</span><a href="#!" class="secondary-content"><i class="material-icons">grade</i></a></li>';
+  $('#index .wrapp .collection').append(li);
+    }
