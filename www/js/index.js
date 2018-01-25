@@ -4,16 +4,10 @@ var app = {
     initialize: function() {
         document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
     },
-
-    // deviceready Event Handler
-    //
-    // Bind any cordova events here. Common events are:
-    // 'pause', 'resume', etc.
     onDeviceReady: function() {
         this.receivedEvent('deviceready');
     },
 
-    // Update DOM on a Received Event
     receivedEvent: function(id) {
        
     }
@@ -22,7 +16,7 @@ var app = {
 app.initialize();
 
 var add, expens, index, back, card, submit, exp, price, myarray = [],
-    d, date, month, year, day, available=[];
+    d, date, month, year, day, available = [], home, card;
 var months=['JAN','FEB','MAR','APR','MAY','JUN','JULY','AUG','SEP','OCT','NOV','DEC'];
 var days=['SUNDAY','MONDAY','TUESDAY','WENSDAY','THURSDAY','FRIDAY','SATURDAY'];
 
@@ -51,15 +45,22 @@ $().ready(function () {
     exp=$('#exp');
 submit=$('#submit');
 price = $('#price');
+goback=$('#goback');
+home=$('#home');
+card = $(".card");
 mydate(); //  get current date
 
 
       //back button
       back.on('click',function () { 
             // alert();
-            console.log(getAll);
+            // console.log(getAll);
        });
-
+goback.on('click',function () {
+    home.show();
+    index.hide();
+    $('.back').hide();
+  });
        //submit click
        submit.on('click',function () {
             var expval = exp.val();
@@ -73,12 +74,46 @@ mydate(); //  get current date
             }
 
          });
+
+           var longpress = 500;
+           var start;
+
+           card.on('touchstart mousedown', function (e) {
+            //    e.preventDefault();
+               start = new Date().getTime();
+           });
+           card.on('touchend mouseup', function (e) {
+               var tempDate = new Date().getTime();
+               if (tempDate >= (start + longpress)) {
+                //    alert('long press!');
+                   $(this).parent('.wrappcard').addClass('delete');
+               } else {
+                //    alert('short press!');
+                   $(this).parent('.wrappcard').removeClass('delete');
+                     index.show();
+                     home.hide();
+                      $('.back').show();
+               }
+           });
+           
   });
 
-  $(document).on('click','.card',function() {
-     $('#index').show();
-     $('#home').hide();
-  });
+ $(document).on('click', '.wrappcard .del', function () {
+     console.log('del');
+     var t=$(this);
+    var del = t.attr('id');
+     t.parent('.wrappcard').remove();
+     database.delete(del);
+ });
+
+
+//   $(document).on('click', '.card', function () {
+      
+
+//      index.show();
+//      home.hide();
+//       $('.back').show();
+//   });
 
   function mydate() {
       //current date
@@ -99,8 +134,6 @@ mydate(); //  get current date
               'exp': expval,
               'priceval': priceval
           };
-// console.log(typeof (temp));
-// console.log(temp);
         if(temp!=null && temp.length>0)
         {
             console.log('temp: ',temp);
@@ -131,13 +164,20 @@ mydate(); //  get current date
      },
 
      'getAll':function () {
-         var available = localStorage.getItem('available');
-        return(JSON.parse(localStorage.getItem(available)));
-         
+        return(JSON.parse(localStorage.getItem('available')));
        },
 
        'setTotal':function () { 
 
-        }
+        },
+'delete': function (del) {
+    var arraypos = months.indexOf(del);
+    var temp=database.getAll();
+    console.log('arraypos ', arraypos);
+    temp[arraypos]=null;
+    localStorage.setItem('available',JSON.stringify(temp));
+    localStorage.removeItem(del);
+}
   }
   
+ 
